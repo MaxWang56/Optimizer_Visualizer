@@ -3,7 +3,7 @@ import torch
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 from tqdm import tqdm
-from CustomOptimizers import CosineRateDecay
+from CustomOptimizers import SGD
 
 def rosenbrock(x, y, a, b):
 
@@ -11,7 +11,7 @@ def rosenbrock(x, y, a, b):
 
 def run_optimization(x_0, y_0, optimizer, epochs):
     xy_t = torch.tensor((x_0, y_0), requires_grad=True)
-    optimizer = CosineRateDecay([xy_t], 0.001, 0.01, 10)
+    optimizer = SGD([xy_t], 0.001, 0.01, 10)
 
     path = np.empty((epochs + 1, 2))
     path[0, :] = (x_0, y_0)
@@ -22,7 +22,6 @@ def run_optimization(x_0, y_0, optimizer, epochs):
         loss.backward()
         torch.nn.utils.clip_grad_norm(xy_t, 1.0)
         optimizer.step(i)
-
         path[i, :] = xy_t.detach().numpy()
     print(path)
     return path
@@ -70,7 +69,7 @@ def visualize_path(paths, colors, names,
 
 n_epochs = 1000
 weight_decay = 0.1
-path_cosineratedecay = run_optimization(0.3, 0.8, CosineRateDecay, n_epochs)
+path_cosineratedecay = run_optimization(0.3, 0.8, SGD, n_epochs)
 
 freq = 10
 
